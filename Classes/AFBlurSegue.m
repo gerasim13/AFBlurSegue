@@ -96,12 +96,21 @@
         
         [sourceController presentViewController:destinationController animated:YES completion:nil];
         
-        [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            
-            [UIView animateWithDuration:[context transitionDuration] animations:^{
+        if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_7_0) {
+            [UIView animateWithDuration:0.27 animations:^{
                 blurredBackground.frame = CGRectMake(0, 0, backgroundRect.size.width, backgroundRect.size.height);
             }];
-        } completion:nil];
+        } else {
+            
+            [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+                
+                [UIView animateWithDuration:[context transitionDuration] animations:^{
+                    blurredBackground.frame = CGRectMake(0, 0, backgroundRect.size.width, backgroundRect.size.height);
+                }];
+                
+            } completion:nil];
+            
+        }
     } else {
         
         UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
