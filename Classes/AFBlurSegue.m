@@ -31,50 +31,18 @@
     
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
         
-        UIImage *background = [UIImage new];
+        UIGraphicsBeginImageContextWithOptions(sourceController.view.frame.size, YES, [[UIScreen mainScreen] scale]);
         
-        if ([sourceController isKindOfClass:[UITableViewController class]]) {
-            
-            UIView *viewToRender = [(UITableViewController *)sourceController tableView];
-            CGPoint contentOffset = [[(UITableViewController *)sourceController tableView]contentOffset];
-            
-            UIGraphicsBeginImageContext(viewToRender.bounds.size);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            CGContextTranslateCTM(context, 0, -contentOffset.y);
-            [viewToRender.layer renderInContext:context];
-            background = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-        } else {
-            
-            UIGraphicsBeginImageContextWithOptions(sourceController.view.bounds.size, YES, 0);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            [sourceController.view.layer renderInContext:context];
-            background = UIGraphicsGetImageFromCurrentImageContext();
+        BOOL success = [sourceController.view drawViewHierarchyInRect:CGRectMake(0.0, 0.0, sourceController.view.frame.size.width, sourceController.view.frame.size.height) afterScreenUpdates:NO];
+        
+        UIImage *backgroundImage;
+        if ( success )
+        {
+            backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
         }
         
-        switch ([[UIApplication sharedApplication]statusBarOrientation]) {
-            case UIInterfaceOrientationPortrait:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationUp];
-                break;
-                
-            case UIInterfaceOrientationPortraitUpsideDown:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationDown];
-                break;
-                
-            case UIInterfaceOrientationLandscapeLeft:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationLeft];
-                break;
-                
-            case UIInterfaceOrientationLandscapeRight:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationRight];
-                break;
-                
-            default:
-                break;
-        }
-        
-        UIImageView *blurredBackground = [[UIImageView alloc]initWithImage:[background applyBlurWithRadius:_blurRadius tintColor:_tintColor saturationDeltaFactor:_saturationDeltaFactor maskImage:nil]];
+        UIImageView *blurredBackground = [[UIImageView alloc]initWithImage:[backgroundImage applyBlurWithRadius:_blurRadius tintColor:_tintColor saturationDeltaFactor:_saturationDeltaFactor maskImage:nil]];
         
         CGRect backgroundRect = [sourceController.view convertRect:sourceController.view.window.bounds fromView:Nil];
         
@@ -104,7 +72,7 @@
         } completion:nil];
     } else {
         
-        UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
         UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:visualEffect];
         
         blurView.translatesAutoresizingMaskIntoConstraints = NO;
