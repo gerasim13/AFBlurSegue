@@ -17,7 +17,7 @@
     
     if (self) {
         _blurRadius = 20;
-        _tintColor = [UIColor clearColor];
+        _tintColor = [UIColor colorWithWhite:0.0 alpha:0.6];
         _saturationDeltaFactor = 0.5;
     }
     
