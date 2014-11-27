@@ -113,7 +113,7 @@
         }
     } else {
         
-        UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:self.blurEffectStyle];
         UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:visualEffect];
         
         blurView.translatesAutoresizingMaskIntoConstraints = NO;
