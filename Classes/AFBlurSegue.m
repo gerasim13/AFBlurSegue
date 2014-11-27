@@ -33,25 +33,12 @@
         
         UIImage *background = [UIImage new];
         
-        if ([sourceController isKindOfClass:[UITableViewController class]]) {
-            
-            UIView *viewToRender = [(UITableViewController *)sourceController tableView];
-            CGPoint contentOffset = [[(UITableViewController *)sourceController tableView]contentOffset];
-            
-            UIGraphicsBeginImageContext(viewToRender.bounds.size);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            CGContextTranslateCTM(context, 0, -contentOffset.y);
-            [viewToRender.layer renderInContext:context];
-            background = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-        } else {
-            
-            UIGraphicsBeginImageContextWithOptions(sourceController.view.bounds.size, YES, 0);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            [sourceController.view.layer renderInContext:context];
-            background = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-        }
+        UIGraphicsBeginImageContextWithOptions(sourceController.view.window.bounds.size, YES, 0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        [sourceController.view.window.layer renderInContext:context];
+        background = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();  UIGraphicsEndImageContext();
+        
         
         switch ([[UIApplication sharedApplication]statusBarOrientation]) {
             case UIInterfaceOrientationPortrait:
