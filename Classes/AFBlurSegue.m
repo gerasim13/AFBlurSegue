@@ -17,7 +17,7 @@
     
     if (self) {
         _blurRadius = 20;
-        _tintColor = [UIColor clearColor];
+        _tintColor = [UIColor colorWithWhite:0.0 alpha:0.6];
         _saturationDeltaFactor = 0.5;
     }
     
@@ -31,37 +31,18 @@
     
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
         
-        UIImage *background = [UIImage new];
+        UIGraphicsBeginImageContextWithOptions(sourceController.view.frame.size, YES, [[UIScreen mainScreen] scale]);
         
-        UIGraphicsBeginImageContextWithOptions(sourceController.view.window.bounds.size, YES, 0);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        [sourceController.view.window.layer renderInContext:context];
-        background = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();  UIGraphicsEndImageContext();
+        BOOL success = [sourceController.view drawViewHierarchyInRect:CGRectMake(0.0, 0.0, sourceController.view.frame.size.width, sourceController.view.frame.size.height) afterScreenUpdates:NO];
         
-        
-        switch ([[UIApplication sharedApplication]statusBarOrientation]) {
-            case UIInterfaceOrientationPortrait:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationUp];
-                break;
-                
-            case UIInterfaceOrientationPortraitUpsideDown:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationDown];
-                break;
-                
-            case UIInterfaceOrientationLandscapeLeft:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationLeft];
-                break;
-                
-            case UIInterfaceOrientationLandscapeRight:
-                background = [UIImage imageWithCGImage:background.CGImage scale:1 orientation:UIImageOrientationRight];
-                break;
-                
-            default:
-                break;
+        UIImage *backgroundImage;
+        if ( success )
+        {
+            backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
         }
         
-        UIImageView *blurredBackground = [[UIImageView alloc]initWithImage:[background applyBlurWithRadius:_blurRadius tintColor:_tintColor saturationDeltaFactor:_saturationDeltaFactor maskImage:nil]];
+        UIImageView *blurredBackground = [[UIImageView alloc]initWithImage:[backgroundImage applyBlurWithRadius:_blurRadius tintColor:_tintColor saturationDeltaFactor:_saturationDeltaFactor maskImage:nil]];
         
         CGRect backgroundRect = [sourceController.view convertRect:sourceController.view.window.bounds fromView:Nil];
         
@@ -83,24 +64,15 @@
         
         [sourceController presentViewController:destinationController animated:YES completion:nil];
         
-        if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_7_0) {
-            [UIView animateWithDuration:0.27 animations:^{
+        [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            
+            [UIView animateWithDuration:[context transitionDuration] animations:^{
                 blurredBackground.frame = CGRectMake(0, 0, backgroundRect.size.width, backgroundRect.size.height);
             }];
-        } else {
-            
-            [destinationController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-                
-                [UIView animateWithDuration:[context transitionDuration] animations:^{
-                    blurredBackground.frame = CGRectMake(0, 0, backgroundRect.size.width, backgroundRect.size.height);
-                }];
-                
-            } completion:nil];
-            
-        }
+        } completion:nil];
     } else {
         
-        UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:self.blurEffectStyle];
+        UIVisualEffect *visualEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
         UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:visualEffect];
         
         blurView.translatesAutoresizingMaskIntoConstraints = NO;
