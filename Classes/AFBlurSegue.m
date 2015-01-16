@@ -6,10 +6,24 @@
 //  Copyright (c) 2014 AlvaroFranco. All rights reserved.
 //
 
+//______________________________________________________________________________________________________________________
+
 #import "AFBlurSegue.h"
 #import "UIImage+ImageEffects.h"
+#import "UIDevice+Hardware.h"
+
+//______________________________________________________________________________________________________________________
+
+@interface AFBlurSegue ()
+@property (nonatomic, readonly) BOOL canBlur;
+@end
+
+//______________________________________________________________________________________________________________________
 
 @implementation AFBlurSegue
+@dynamic canBlur;
+
+//______________________________________________________________________________________________________________________
 
 -(id)initWithIdentifier:(NSString *)identifier source:(UIViewController *)source destination:(UIViewController *)destination {
     
@@ -29,7 +43,8 @@
     UIViewController *sourceController = self.sourceViewController;
     UIViewController *destinationController = self.destinationViewController;
     
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+    if (!self.canBlur)
+    {
         
         UIGraphicsBeginImageContextWithOptions(sourceController.view.frame.size, YES, [[UIScreen mainScreen] scale]);
         
@@ -96,5 +111,31 @@
         } completion:nil];
     }
 }
+
+- (BOOL)canBlur
+{
+    if (NSFoundationVersionNumber >= NSFoundationVersionNumber_iOS_7_1)
+    {
+        NSString *device =[UIDevice deviceName];
+        // Detect simulator
+#ifdef DEBUG
+        if([device isEqualToString:@"i386"] || [device isEqualToString:@"x86_64"])
+        {
+            NSInteger quality = [[UIDevice currentDevice] performSelector:@selector(_graphicsQuality)];
+            return quality > 40;
+        }
+#endif
+        // Device with poor graphics, blur not supported
+        NSSet *const graphicsQuality = [NSSet setWithObjects:@[@"iPad", @"iPad1,1", @"iPhone1,1", @"iPhone1,2",
+                                                               @"iPhone2,1", @"iPhone3,1", @"iPhone3,2", @"iPhone3,3",
+                                                               @"iPod1,1", @"iPod2,1", @"iPod2,2", @"iPod3,1",
+                                                               @"iPod4,1", @"iPad2,1", @"iPad2,2", @"iPad2,3",
+                                                               @"iPad2,4", @"iPad3,1", @"iPad3,2", @"iPad3,3"], nil];
+        return ![graphicsQuality containsObject:device];
+    }
+    return NO;
+}
+
+//______________________________________________________________________________________________________________________
 
 @end
