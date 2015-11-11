@@ -6,19 +6,13 @@
 //  Copyright (c) 2014 AlvaroFranco. All rights reserved.
 //
 
-//______________________________________________________________________________________________________________________
-
 #import <UIKit/UIKit.h>
-
-//______________________________________________________________________________________________________________________
 
 @interface AFBlurSegue : UIStoryboardSegue
 
-@property (nonatomic) CGFloat blurRadius UI_APPEARANCE_SELECTOR;
-@property (nonatomic, strong) UIColor *tintColor UI_APPEARANCE_SELECTOR;
-@property (nonatomic) CGFloat saturationDeltaFactor UI_APPEARANCE_SELECTOR;
-@property (nonatomic, assign) UIBlurEffectStyle blurEffectStyle UI_APPEARANCE_SELECTOR;
+@property (nonatomic) CGFloat blurRadius;
+@property (nonatomic, strong) UIColor *tintColor;
+@property (nonatomic) CGFloat saturationDeltaFactor;
+@property (nonatomic) UIBlurEffectStyle blurEffectStyle;
 
 @end
-
-//______________________________________________________________________________________________________________________
